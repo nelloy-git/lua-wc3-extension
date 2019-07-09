@@ -6,6 +6,7 @@ import os
 import pathlib
 from luaparser import ast
 
+from . import lua_code
 from . import ast_to_string as ats
 from . import call_lua as cl
 
@@ -22,7 +23,7 @@ def read_content(main_path, src_dir, file_list, content_list):
     '''
 
     # Read file.
-    full_src_path = src_dir + '/' + main_path
+    full_src_path = os.path.join(src_dir, main_path)
     with open(full_src_path, 'r') as file:
         module = file.read()
     tree = ast.parse(module)
@@ -47,7 +48,9 @@ def get_contents(main_path, src_dir):
     file_list = []
     content_list = []
     read_content(main_path, src_dir, file_list, content_list)
-    return file_list.reverse(), content_list.reverse()
+    file_list.reverse()
+    content_list.reverse()
+    return file_list, content_list
 
 
 def fix_content_return(file_path, content):
@@ -63,7 +66,7 @@ def fix_content_return(file_path, content):
 def compiletime_execution(module_tree):
     # Run module to get compiletime results list.
     cl.clear_enviroment()
-    cl.init_compiletime()
+    cl.init_code(lua_code.LUA_COMPILETIME)
     cl.load_enviroment(ats.node_to_str(module_tree))
 
     # Get compiletime results.
@@ -91,7 +94,7 @@ def compiletime_execution(module_tree):
 
 
 def link_content(content_list):
-    require_tree = ast.parse(cl.lua_require)
+    require_tree = ast.parse(lua_code.LUA_REQUIRE)
     content_list.insert(0, require_tree)
     block = ast.Block(content_list)
     return block

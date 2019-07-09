@@ -4,6 +4,7 @@
 '''
 
 import os
+import sys
 
 import imports.parse_module as pm
 import imports.ast_to_string as ats
@@ -12,10 +13,16 @@ import imports.read_config as conf
 script_path = os.path.abspath(os.path.join(__file__, os.pardir))
 conf_path = os.path.join(script_path, 'config.txt')
 
-war3_exe, src_dir, dst_dir = conf.get_paths(conf_path)
-if src_dir is None or dst_dir is None:
-    exit()
+src_dir = sys.argv[1]
+dst_dir = sys.argv[2]
+war3_exe = None
+if len(sys.argv) > 3:
+    war3_exe = sys.argv[3]
+# war3_exe, src_dir, dst_dir = conf.get_paths(conf_path)
+# if src_dir is None or dst_dir is None:
+#     exit()
 
+print('')
 if not war3_exe is None:
     print('Warcraft III.exe path:\n  ' + war3_exe)
 print('Source dir path:\n  ' + src_dir)

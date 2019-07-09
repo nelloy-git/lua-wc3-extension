@@ -18,7 +18,24 @@
 		"commands": [{
 			"command": "lua-wc3.Build",
 			"title": "Warcraft 3: Build map"
-		}]
+        }],
+        "configuration":[
+            {
+                "title": "lua-wc3",
+                "properties": {
+                    "lua-wc3.destinationFolder":{
+                        "type": "string",
+                        "default": "dst",
+                        "description": "Relative path to destination folder in workspace."
+                    },
+                    "lua-wc3.sourceFolder":{
+                        "type": "string",
+                        "default": "src",
+                        "description": "Relative path to source folder in workspace."
+                    }
+                }
+            }
+        ]
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",

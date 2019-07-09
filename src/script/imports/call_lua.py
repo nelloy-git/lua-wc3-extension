@@ -7,43 +7,16 @@ import lupa
 lua = lupa.LuaRuntime(unpack_returned_tuples=True)
 
 
-LUA_COMPILETIME = \
-    '''
-    is_compiletime = 1
-    compiletime_count = 0
-    compiletime_results = {}
+def init_code(code):
+    lua.execute(code)
 
-    function compiletime(body)
-        if type(body) == \'function\' then
-            compiletime_results[compiletime_count + 1] = body()
-        else
-            compiletime_results[compiletime_count + 1] = body
-        end
-        compiletime_count = compiletime_count + 1
-    end
-    '''
-
-LUA_REQUIRE = \
-    '''
-    function require(module)
-        module = module:gsub(\'%.\', \'_\')
-        local func = _G[module..\'_return\']
-        if func == nil then
-            return nil
-        end
-        return func()
-    end
-    '''
-
-
-def init_compiletime():
-    lua.execute(LUA_COMPILETIME)
 
 def load_enviroment(content):
     try:
         lua.execute(content)
     except RuntimeError as err:
         print('RuntimeError: ', err)
+
 
 def lua_to_ast(val, val_type):
     if val_type == 'nil':
@@ -64,11 +37,13 @@ def lua_to_ast(val, val_type):
            string or table (with nils, numbers, strings and tables etc.).')
     return False
 
+
 def get_compiletime_result(pos):
     lg = lua.globals()
     res = lg.compiletime_results[pos]
     res_type = lg.type(lg.compiletime_results[pos])
     return lua_to_ast(res, res_type)
+
 
 def clear_enviroment():
     lua.execute('for k, v in pairs(_G) do v = nil end')
