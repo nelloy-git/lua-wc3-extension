@@ -1,0 +1,3 @@
+Warcraft III.exe path: ""
+Map folder path: "/home/bugrov/concat_lua/src"
+Build folder path: "/home/bugrov/concat_lua/build"
