@@ -41,7 +41,7 @@ full_content = pm.link_content(content_list)
 print('\nCompiletime output:')
 pm.compiletime_execution(full_content)
 
-with open(dst_dir + '/war3map.lua', 'w') as file:
+with open(os.path.join(dst_dir, 'war3map.lua'), 'w') as file:
     file.write(ats.node_to_str(full_content))
     
 map_files = [
