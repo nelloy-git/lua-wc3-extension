@@ -53,11 +53,22 @@ def get_contents(main_path, src_dir):
     return file_list, content_list
 
 
+def content_to_function(file_path, content):
+    module_name = file_path[:-4].replace('/', '.')
+    res = content
+    if module_name != 'war3map':
+        func_tree = ast.parse(lua_code.LUA_REQUIRE_FUNC).body.body[0]
+        func_tree.values[0].body = content.body
+        func_tree.targets[0].idx = ast.String(module_name)
+        res = func_tree
+    return res
+
+
 def fix_content_return(file_path, content):
     module_name = ats.path_to_module_name(file_path)
     for pos, node in enumerate(content.body.body):
         if isinstance(node, ast.Return):
-            func = ast.Function(ast.Name(str(module_name) + '_return'), [], ast.Block([node]))
+            func = ast.Function(ast.Name(str(module_name) + '_return'), [], node.body)
             content.body.body.pop(pos)
             #content.body.body[pos] = func
             content.body.body.append(func)

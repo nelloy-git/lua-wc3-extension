@@ -2,6 +2,7 @@
     Lua code lib.
 '''
 
+
 LUA_COMPILETIME = \
     '''
     is_compiletime = 1
@@ -21,12 +22,24 @@ LUA_COMPILETIME = \
 
 LUA_REQUIRE = \
     '''
-    function require(module)
-        module = module:gsub(\'%.\', \'_\')
-        local func = _G[module..\'_return\']
-        if func == nil then
-            return nil
+    require_data = {
+        loaded = {},
+        module = {},
+        return = {},
+    }
+    
+    function require(name)
+        if not require_data.loaded[name] then
+            require_data.return[name] = require_data.module[name]()
+            require_data.loaded[name] = true
         end
-        return func()
+        return require_data.return[name]
+    end
+    '''
+
+
+LUA_REQUIRE_FUNC = \
+    '''
+    require_data.module['name'] = function()
     end
     '''

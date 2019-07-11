@@ -8,19 +8,13 @@ import sys
 
 import imports.parse_module as pm
 import imports.ast_to_string as ats
-import imports.read_config as conf
 
-script_path = os.path.abspath(os.path.join(__file__, os.pardir))
-conf_path = os.path.join(script_path, 'config.txt')
 
 src_dir = sys.argv[1]
 dst_dir = sys.argv[2]
 war3_exe = None
 if len(sys.argv) > 3:
     war3_exe = sys.argv[3]
-# war3_exe, src_dir, dst_dir = conf.get_paths(conf_path)
-# if src_dir is None or dst_dir is None:
-#     exit()
 
 print('')
 if not war3_exe is None:
@@ -35,9 +29,11 @@ for f in file_list:
     print('  ' + f)
 
 for i, file_path in enumerate(file_list):
-    pm.fix_content_return(file_path, content_list[i])
+    content_list[i] = pm.content_to_function(file_path, content_list[i])
 
 full_content = pm.link_content(content_list)
+print(full_content)
+
 print('\nCompiletime output:')
 pm.compiletime_execution(full_content)
 

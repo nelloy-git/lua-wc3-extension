@@ -7,7 +7,7 @@ from luaparser import ast
 
 def chunk_to_str(node, lvl):
     ''' Converts ast.Chunk to str. '''
-    return '  ' * (lvl - 1) + 'do\n' + node_to_str(node.body, lvl) + '  ' * (lvl - 1) + '\nend'
+    return node_to_str(node.body, lvl)
 
 
 def block_to_str(node, lvl=0):
@@ -27,6 +27,8 @@ def name_to_str(node, _):
 def index_to_str(node, lvl):
     ''' Converts ast.Index to str. '''
     if isinstance(node.idx, ast.String):
+        if '.' in node.idx.s:
+            return node_to_str(node.value, lvl) + '[' + node_to_str(node.idx, lvl) + ']'
         return node_to_str(node.value, lvl) + '.' + node_to_str(node.idx, lvl)[1:-1]
     if isinstance(node.idx, ast.Name):
         return node_to_str(node.value, lvl) + '.' + node_to_str(node.idx, lvl)
@@ -268,7 +270,7 @@ def anon_func_to_str(node, lvl):
         s_arg += node_to_str(arg) + ', '
     s_arg = s_arg[:-2]
 
-    return 'function(' + s_arg + ')\n' + node_to_str(node.body, lvl) + '\n' + \
+    return 'function(' + s_arg + ')\n' + node_to_str(node.body, lvl + 1) + '\n' + \
             ('  ' * (lvl-1)) + 'end'
 
 
