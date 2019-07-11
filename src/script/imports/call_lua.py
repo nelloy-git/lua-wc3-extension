@@ -3,15 +3,21 @@
 '''
 
 from luaparser import ast
+import os
 import lupa
-lua = lupa.LuaRuntime(unpack_returned_tuples=True)
+
+lua = None
+
+def init_lua(path):
+    os.chdir(path)
+    return lupa.LuaRuntime(unpack_returned_tuples=True)
 
 
-def init_code(code):
+def init_code(lua, code):
     lua.execute(code)
 
 
-def load_enviroment(content):
+def load_enviroment(lua, content):
     try:
         lua.execute(content)
     except RuntimeError as err:
@@ -38,12 +44,12 @@ def lua_to_ast(val, val_type):
     return False
 
 
-def get_compiletime_result(pos):
+def get_compiletime_result(lua, pos):
     lg = lua.globals()
     res = lg.compiletime_results[pos]
     res_type = lg.type(lg.compiletime_results[pos])
     return lua_to_ast(res, res_type)
 
 
-def clear_enviroment():
+def clear_enviroment(lua):
     lua.execute('for k, v in pairs(_G) do v = nil end')

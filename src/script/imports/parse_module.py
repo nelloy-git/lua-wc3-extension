@@ -74,11 +74,12 @@ def fix_content_return(file_path, content):
             content.body.body.append(func)
 
 
-def compiletime_execution(module_tree):
+def compiletime_execution(module_tree, src_path):
     # Run module to get compiletime results list.
-    cl.clear_enviroment()
-    cl.init_code(lua_code.LUA_COMPILETIME)
-    cl.load_enviroment(ats.node_to_str(module_tree))
+    lua = cl.init_lua(src_path)
+    cl.clear_enviroment(lua)
+    cl.init_code(lua, lua_code.LUA_COMPILETIME)
+    cl.load_enviroment(lua, ats.node_to_str(module_tree))
 
     # Get compiletime results.
     cur = 0
@@ -98,7 +99,7 @@ def compiletime_execution(module_tree):
                     print('Error in compiletime(' + s_args + ').')
                     print('Require function needs only one argument.')
                     return
-                val = cl.get_compiletime_result(cur)
+                val = cl.get_compiletime_result(lua, cur)
                 #print(ats.node_to_str(val))
             new_vals.append(val)
         node.values = new_vals

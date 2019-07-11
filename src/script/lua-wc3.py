@@ -32,10 +32,10 @@ for i, file_path in enumerate(file_list):
     content_list[i] = pm.content_to_function(file_path, content_list[i])
 
 full_content = pm.link_content(content_list)
-print(full_content)
+print(ats.node_to_str(full_content))
 
 print('\nCompiletime output:')
-pm.compiletime_execution(full_content)
+pm.compiletime_execution(full_content, src_dir)
 
 with open(os.path.join(dst_dir, 'war3map.lua'), 'w') as file:
     file.write(ats.node_to_str(full_content))
