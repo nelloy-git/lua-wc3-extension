@@ -30,8 +30,8 @@ def index_to_str(node, lvl):
         if '.' in node.idx.s:
             return node_to_str(node.value, lvl) + '[' + node_to_str(node.idx, lvl) + ']'
         return node_to_str(node.value, lvl) + '.' + node_to_str(node.idx, lvl)[1:-1]
-    if isinstance(node.idx, ast.Name):
-        return node_to_str(node.value, lvl) + '.' + node_to_str(node.idx, lvl)
+    #if isinstance(node.idx, ast.Name):
+        #return node_to_str(node.value, lvl) + '.' + node_to_str(node.idx, lvl)
     return node_to_str(node.value, lvl) + '[' + node_to_str(node.idx, lvl) + ']'
 
 

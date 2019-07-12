@@ -9,14 +9,16 @@ const path = require("path");
 // your extension is activated the very first time the command is executed
 function activate(context) {
     const ext_path = vscode.extensions.getExtension('nelloy.lua-wc3').extensionPath;
-    var script_path = '';
-    if (process.platform === 'win32') {
-        script_path = ext_path + '\\src\\script\\';
-    }
-    else {
-        if (process.platform === 'linux') {
-            script_path = ext_path + '/src/script/';
+    var script_path = path.join(ext_path, 'src', 'script');
+    console.log('Init done');
+    function build_callback(error, stdout, stderr) {
+        if (error) {
+            console.log(error.code);
+            console.log('Signal received: ' + error.stack);
         }
+        console.log('Done');
+        console.log('stdout: ' + stdout);
+        console.log('stderr: ' + stderr);
     }
     // The command has been defined in the package.json file
     // Now provide the implementation of the command with registerCommand
@@ -31,14 +33,12 @@ function activate(context) {
         src_path = path.join(work_path, src_path);
         dst_path = path.join(work_path, dst_path);
         var cmd = '';
-        if (process.platform === 'win32') {
-            cmd = script_path + 'lua-wc3.exe';
-        }
-        if (process.platform === 'linux') {
-            cmd = 'python3 ' + script_path + 'lua-wc3.py';
-        }
+        //if (process.platform === 'win32') {cmd = script_path + 'lua-wc3.exe';}
+        //if (process.platform === 'linux') {cmd = 'python3 ' + script_path + 'lua-wc3.py';}
+        cmd = 'python3 ' + path.join(script_path, 'lua-wc3.py');
         cmd += ' ' + src_path + ' ' + dst_path;
         var workerProcess = child_process.exec(cmd, build_callback);
+        workerProcess.stdout.on('data', function (data) { console.log(data.toString()); });
     });
     context.subscriptions.push(disposable);
 }
@@ -46,12 +46,4 @@ exports.activate = activate;
 // this method is called when your extension is deactivated
 function deactivate() { }
 exports.deactivate = deactivate;
-function build_callback(error, stdout, stderr) {
-    if (error) {
-        console.log(error.code);
-        console.log('Signal received: ' + error.stack);
-    }
-    console.log('stdout: ' + stdout);
-    console.log('stderr: ' + stderr);
-}
 //# sourceMappingURL=extension.js.map

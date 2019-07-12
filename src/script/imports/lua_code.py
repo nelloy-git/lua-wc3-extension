@@ -5,15 +5,22 @@
 
 LUA_COMPILETIME = \
 '''
-is_compiletime = 1
-compiletime_count = 0
-compiletime_results = {}
+is_compiletime = true
+__compile_data = {
+    count = 0,
+    result = {}
+}
 
-function compiletime(body)
+function compiletime(body, ...)
+    if not is_compiletime then
+        print('Compiletime function is trying run in runtime')
+        return
+    end
+    
     if type(body) == \'function\' then
-        compiletime_results[compiletime_count + 1] = body()
+        __compile_data.result[compiletime_count + 1] = body(...)
     else
-        compiletime_results[compiletime_count + 1] = body
+        __compile_data.result[compiletime_count + 1] = body
     end
     compiletime_count = compiletime_count + 1
 end
@@ -22,24 +29,24 @@ end
 
 LUA_REQUIRE = \
 '''
-require_data = {
+__require_data = {
     loaded = {},
     module = {},
     result = {}
 }
 
 function require(name)
-    if require_data.loaded[name] == false then
-        require_data.result[name] = require_data.module[name]()
-        require_data.loaded[name] = true
+    if __require_data.loaded[name] == false then
+        __require_data.result[name] = __require_data.module[name]()
+        __require_data.loaded[name] = true
     end
-    return require_data.result[name]
+    return __require_data.result[name]
 end
 '''
 
 
 LUA_REQUIRE_FUNC = \
     '''
-    require_data.module['name'] = function()
+    __require_data.module['name'] = function()
     end
     '''

@@ -74,40 +74,32 @@ def fix_content_return(file_path, content):
             content.body.body.append(func)
 
 
-def compiletime_execution(module_tree, src_path):
+def compiletime_execution(content, src_path):
     # Run module to get compiletime results list.
     lua = cl.init_lua(src_path)
-    cl.clear_enviroment(lua)
-    cl.init_code(lua, lua_code.LUA_COMPILETIME)
-    cl.load_enviroment(lua, ats.node_to_str(module_tree))
+    cl.execute(lua, ats.node_to_str(content))
 
     # Get compiletime results.
-    cur = 0
-    for node in ast.walk(module_tree):
-        if not isinstance(node, (ast.Assign, ast.LocalAssign)):
-            continue
+    tree_visitor = ast.WalkVisitor()
+    tree_visitor.visit(content)
+    for node in tree_visitor.nodes:
+        if isinstance(node, ast.Call) and ats.node_to_str(node.func) == 'compiletime':
+            val = cl.eval(lua, ats.node_to_str(ast.Block(node.args)))
+            print(ats.node_to_str(val))
+            tree_visitor.nodes[tree_visitor.nodes.index(node)] = val
 
-        new_vals = []
-        for val in node.values:
-            if isinstance(val, ast.Call) and ats.node_to_str(val.func, 0) == 'compiletime':
-                cur += 1
-                if len(val.args) > 1:
-                    s_args = ''
-                    for arg in node.args:
-                        s_args += ats.node_to_str(arg) + ', '
-                    s_args = s_args[:-2]
-                    print('Error in compiletime(' + s_args + ').')
-                    print('Require function needs only one argument.')
-                    return
-                val = cl.get_compiletime_result(lua, cur)
-                #print(ats.node_to_str(val))
-            new_vals.append(val)
-        node.values = new_vals
+
+def add_extension_functions(file_list, content_list):
+    require_tree = ast.parse(lua_code.LUA_REQUIRE)
+    content_list.insert(0, require_tree)
+    file_list.insert(0, 'Require function')
+
+    #compiletime_tree = ast.parse(lua_code.LUA_COMPILETIME)
+    #content_list.insert(0, compiletime_tree)
+    #file_list.insert(0, 'Compiletime function')
 
 
 def link_content(content_list):
-    require_tree = ast.parse(lua_code.LUA_REQUIRE)
-    content_list.insert(0, require_tree)
     block = ast.Block(content_list)
     return block
 
