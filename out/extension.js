@@ -8,8 +8,6 @@ const path = require("path");
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 function activate(context) {
-    const ext_path = vscode.extensions.getExtension('nelloy.lua-wc3').extensionPath;
-    var script_path = path.join(ext_path, 'src', 'script');
     var output_channel = vscode.window.createOutputChannel('lua-wc3');
     console.log('Init done');
     function build_callback(error, stdout, stderr) {
@@ -24,24 +22,27 @@ function activate(context) {
         if (stderr !== '') {
             output_channel.append('Error:\n' + stderr);
         }
+        output_channel.append('\nDone');
         output_channel.show();
     }
     // The command has been defined in the package.json file
     // Now provide the implementation of the command with registerCommand
     // The commandId parameter must match the command field in package.json  
     let disposable = vscode.commands.registerCommand('lua-wc3.Build', () => {
-        var tmp = vscode.workspace.getConfiguration("lua-wc3").get("sourceFolder");
-        var src_path = (tmp) ? String(tmp) : '';
-        tmp = vscode.workspace.getConfiguration("lua-wc3").get("destinationFolder");
-        var dst_path = (tmp) ? String(tmp) : '';
-        tmp = vscode.workspace.rootPath;
+        var src_path = getStringFromConf("sourceFolder");
+        var dst_path = getStringFromConf("destinationFolder");
+        var exe_path = getStringFromConf("exePath");
+        var tmp = vscode.workspace.rootPath;
         var work_path = (tmp) ? String(tmp) : '';
         src_path = path.join(work_path, src_path);
         dst_path = path.join(work_path, dst_path);
         var cmd = '';
-        //if (process.platform === 'win32') {cmd = script_path + 'lua-wc3.exe';}
-        //if (process.platform === 'linux') {cmd = 'python3 ' + script_path + 'lua-wc3.py';}
-        cmd = 'python ' + path.join(script_path, 'lua-wc3.py');
+        if (exe_path.endsWith('.exe')) {
+            cmd = exe_path;
+        }
+        if (exe_path.endsWith('.py')) {
+            cmd = 'python ' + exe_path;
+        }
         cmd += ' ' + src_path + ' ' + dst_path;
         var workerProcess = child_process.exec(cmd, build_callback);
     });
@@ -51,4 +52,8 @@ exports.activate = activate;
 // this method is called when your extension is deactivated
 function deactivate() { }
 exports.deactivate = deactivate;
+function getStringFromConf(name) {
+    var tmp = vscode.workspace.getConfiguration("lua-wc3").get(name);
+    return tmp ? String(tmp) : '';
+}
 //# sourceMappingURL=extension.js.map

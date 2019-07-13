@@ -79,6 +79,8 @@ def fix_content_return(file_path, content):
 def compiletime_execution(content, src_path):
     # Run module to get compiletime results list.
     lua = cl.init_lua(src_path)
+    compiletime_tree = ast.parse(lua_code.LUA_COMPILETIME)
+    cl.execute(lua, ats.node_to_str(compiletime_tree))
     cl.execute(lua, ats.node_to_str(content))
 
     # Get compiletime results.
@@ -100,10 +102,6 @@ def add_extension_functions(file_list, content_list):
     require_tree = ast.parse(lua_code.LUA_REQUIRE)
     content_list.insert(0, require_tree)
     file_list.insert(0, 'Require function')
-
-    compiletime_tree = ast.parse(lua_code.LUA_COMPILETIME)
-    content_list.insert(0, compiletime_tree)
-    file_list.insert(0, 'Compiletime function')
 
 
 def link_content(content_list):

@@ -14,8 +14,6 @@ def init_lua(path):
 
 def eval(lua, content):
     lg = lua.globals()
-    #for k in lg:
-    #    print(k)
     val = lua.eval(content)
     val_type = lg.type(val)
     return lua_to_ast(lua, val, val_type)
