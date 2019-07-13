@@ -12,18 +12,25 @@ import { isUndefined } from 'util';
 export function activate(context: vscode.ExtensionContext) {
     const ext_path = vscode.extensions.getExtension('nelloy.lua-wc3')!.extensionPath;
     var script_path = path.join(ext_path, 'src', 'script');
+    var output_channel = vscode.window.createOutputChannel('lua-wc3');
     console.log('Init done');
 
     function build_callback (error: child_process.ExecException | null,
                              stdout: string | Buffer,
                              stderr: string | Buffer) {
+                                 
+        output_channel.clear();
         if (error) {
-            console.log(error.code);
-            console.log('Signal received: '+ error.stack);
+            output_channel.append('Error: ' + error.code);
+            output_channel.append('Signal received: '+ error.stack);
         }
-        console.log('Done');
-        console.log('stdout: ' + stdout);
-        console.log('stderr: ' + stderr);
+        if (stdout !== ''){
+            output_channel.append('Compiletime output:\n' + stdout);
+        }
+        if (stderr !== ''){
+            output_channel.append('Error:\n' + stderr);
+        }
+        output_channel.show();
     }
 
 	// The command has been defined in the package.json file
@@ -44,11 +51,10 @@ export function activate(context: vscode.ExtensionContext) {
         var cmd = '';
         //if (process.platform === 'win32') {cmd = script_path + 'lua-wc3.exe';}
         //if (process.platform === 'linux') {cmd = 'python3 ' + script_path + 'lua-wc3.py';}
-        cmd = 'python3 ' + path.join(script_path, 'lua-wc3.py');
+        cmd = 'python ' + path.join(script_path, 'lua-wc3.py');
         cmd += ' ' + src_path + ' ' + dst_path;
 
         var workerProcess = child_process.exec(cmd, build_callback);
-        workerProcess.stdout.on('data', function(data){console.log(data.toString());});
 	});
 
 	context.subscriptions.push(disposable);

@@ -13,9 +13,17 @@ def init_lua(path):
 
 
 def eval(lua, content):
-    print('val')
     lg = lua.globals()
+    #for k in lg:
+    #    print(k)
     val = lua.eval(content)
+    val_type = lg.type(val)
+    return lua_to_ast(lua, val, val_type)
+
+
+def get_compile_res(lua, pos):
+    lg = lua.globals()
+    val = lua.eval('__compile_data.result[%d]' % pos)
     val_type = lg.type(val)
     return lua_to_ast(lua, val, val_type)
 

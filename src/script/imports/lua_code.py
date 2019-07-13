@@ -12,17 +12,17 @@ __compile_data = {
 }
 
 function compiletime(body, ...)
-    if not is_compiletime then
+    if is_compiletime == false then
         print('Compiletime function is trying run in runtime')
-        return
+        return nil
     end
     
+    __compile_data.count = __compile_data.count + 1
     if type(body) == \'function\' then
-        __compile_data.result[compiletime_count + 1] = body(...)
+        __compile_data.result[__compile_data.count] = body(...)
     else
-        __compile_data.result[compiletime_count + 1] = body
+        __compile_data.result[__compile_data.count] = body
     end
-    compiletime_count = compiletime_count + 1
 end
 '''
 
@@ -36,7 +36,7 @@ __require_data = {
 }
 
 function require(name)
-    if __require_data.loaded[name] == false then
+    if not __require_data.loaded[name] then
         __require_data.result[name] = __require_data.module[name]()
         __require_data.loaded[name] = true
     end

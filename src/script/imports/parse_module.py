@@ -8,7 +8,9 @@ from luaparser import ast
 
 from . import lua_code
 from . import ast_to_string as ats
+from . import find_node
 from . import call_lua as cl
+import copy
 
 
 def read_content(main_path, src_dir, file_list, content_list):
@@ -82,11 +84,16 @@ def compiletime_execution(content, src_path):
     # Get compiletime results.
     tree_visitor = ast.WalkVisitor()
     tree_visitor.visit(content)
+    num = 0
     for node in tree_visitor.nodes:
         if isinstance(node, ast.Call) and ats.node_to_str(node.func) == 'compiletime':
-            val = cl.eval(lua, ats.node_to_str(ast.Block(node.args)))
-            print(ats.node_to_str(val))
-            tree_visitor.nodes[tree_visitor.nodes.index(node)] = val
+            #val = cl.eval(lua, ats.node_to_str(ast.Block(node.args)))
+            num += 1
+            val = cl.get_compile_res(lua, num)
+            find_node.change_node(content, node, val)
+            #print(ats.node_to_str(val))
+    #print('\n\n')
+    #print(ats.node_to_str(content))
 
 
 def add_extension_functions(file_list, content_list):
@@ -94,9 +101,9 @@ def add_extension_functions(file_list, content_list):
     content_list.insert(0, require_tree)
     file_list.insert(0, 'Require function')
 
-    #compiletime_tree = ast.parse(lua_code.LUA_COMPILETIME)
-    #content_list.insert(0, compiletime_tree)
-    #file_list.insert(0, 'Compiletime function')
+    compiletime_tree = ast.parse(lua_code.LUA_COMPILETIME)
+    content_list.insert(0, compiletime_tree)
+    file_list.insert(0, 'Compiletime function')
 
 
 def link_content(content_list):

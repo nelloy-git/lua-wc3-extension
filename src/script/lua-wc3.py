@@ -34,10 +34,10 @@ for i, file_path in enumerate(file_list):
 full_content = pm.link_content(content_list)
 pm.add_extension_functions(file_list, content_list)
 
-with open(os.path.join(dst_dir, 'before_compiletime_war3map.lua'), 'w') as file:
-    file.write(ats.node_to_str(full_content))
+#with open(os.path.join(dst_dir, 'before_compiletime_war3map.lua'), 'w') as file:
+#    file.write(ats.node_to_str(full_content))
 
-print('\nCompiletime output:')
+#print('\nCompiletime output:')
 pm.compiletime_execution(full_content, src_dir)
 
 with open(os.path.join(dst_dir, 'war3map.lua'), 'w') as file:
@@ -64,7 +64,7 @@ map_folders = [
     'war3mapImported'
 ]
 
-input("Press Enter to continue...")
+#input("Press Enter to continue...")
 #path = build_dir + '/map.w3x'
 #subprocess.run(['./MPQEditor.exe', 'new', path])
 #for f in map_files:
