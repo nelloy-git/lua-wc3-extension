@@ -4,10 +4,12 @@ Features:
 * compiletime function
 
 Requirements:
-Windows:
+lua-wc3.exe or lua-wc3.py(with 'imports' folder) from https://github.com/nelloy-git/lua-wc3
+
+For .exe:
     None
-Linux:
-* Python 3.6 with modules
+For python:
+    - Python 3.6
     - luaparser
     - lupa
 
