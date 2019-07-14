@@ -37,7 +37,7 @@
                     "lua-wc3.exePath":{
                         "type": "string",
                         "default": "lua-wc3",
-                        "description": "Window: path to lua-wc3.exe.\nLinux: path to lua-wc3.py"
+                        "description": "Path to lua-wc3.exe or lua-wc3.py"
                     }
                 }
             }

@@ -1,6 +1,0 @@
-{
-    "name": "lua-wc3.exe",
-    "dependencies": {
-        "exe": "./lua-wc3.exe"
-    }
-}
