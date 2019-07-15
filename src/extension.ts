@@ -48,7 +48,8 @@ export function activate(context: vscode.ExtensionContext) {
 
         var cmd = '';
         if (exe_path.endsWith('.exe')){cmd = exe_path;}
-        if (exe_path.endsWith('.py')) {cmd = 'python ' + exe_path;}
+        if (process.platform === 'win32' && exe_path.endsWith('.py')) {cmd = 'python ' + exe_path;}
+        if (process.platform === 'linux' && exe_path.endsWith('.py')) {cmd = 'python3 ' + exe_path;}
         cmd += ' ' + src_path + ' ' + dst_path;
 
         var workerProcess = child_process.exec(cmd, build_callback);
